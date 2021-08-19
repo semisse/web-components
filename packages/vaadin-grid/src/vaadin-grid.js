@@ -410,12 +410,14 @@ class GridElement extends ElementMixin(
     super.connectedCallback();
     this.isAttached = true;
     this.recalculateColumnWidths();
+    this.__virtualizer.connectedChanged(true);
   }
 
   /** @protected */
   disconnectedCallback() {
     super.disconnectedCallback();
     this.isAttached = false;
+    this.__virtualizer.connectedChanged(false);
   }
 
   /** @private */

@@ -35,7 +35,8 @@ export class IronListAdapter {
       this.scrollContainer.style.position = 'relative';
     }
 
-    this.__resizeObserver.observe(this.scrollTarget);
+    this.__observeResize(this.scrollTarget);
+
     this.scrollTarget.addEventListener('scroll', () => this._scrollHandler());
 
     this._scrollLineHeight = this._getScrollLineHeight();
@@ -225,6 +226,37 @@ export class IronListAdapter {
     this.grid && this._updateGridMetrics();
   }
 
+  connectedChanged(connected) {
+    // Toggle resize observer
+    if (connected) {
+      this.__observeResizeAll();
+      this.flush();
+    } else {
+      // All ResizeObservers need to be unobserved on disconnect to avoid memory leaks.
+      this.__unobserveResizeAll();
+    }
+  }
+
+  /** @private */
+  __observeResize(el) {
+    if (!this.__observedElements) {
+      this.__observedElements = new Set();
+    }
+
+    this.__observedElements.add(el);
+    this.__resizeObserver.observe(el);
+  }
+
+  /** @private */
+  __observeResizeAll() {
+    this.__observedElements.forEach((el) => this.__resizeObserver.observe(el));
+  }
+
+  /** @private */
+  __unobserveResizeAll() {
+    this.__resizeObserver.disconnect();
+  }
+
   /** @private */
   setAttribute() {}
 
@@ -235,7 +267,7 @@ export class IronListAdapter {
     physicalItems.forEach((el) => {
       el.style.position = 'absolute';
       fragment.appendChild(el);
-      this.__resizeObserver.observe(el);
+      this.__observeResize(el);
     });
     this.elementsContainer.appendChild(fragment);
     return physicalItems;

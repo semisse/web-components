@@ -80,4 +80,14 @@ export class Virtualizer {
   get lastVisibleIndex() {
     return this.__adapter.adjustedLastVisibleIndex;
   }
+
+  /**
+   * Invoke whenever the scroll target gets disconnected/reconnected to the DOM to avoid memory leaks.
+   *
+   * @method connectedChanged
+   * @param {boolean} connected Is the scroll target connected
+   */
+  connectedChanged(connected) {
+    this.__adapter.connectedChanged(connected);
+  }
 }

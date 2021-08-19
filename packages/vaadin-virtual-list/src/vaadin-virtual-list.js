@@ -111,6 +111,18 @@ class VirtualListElement extends ElementMixin(ThemableMixin(PolymerElement)) {
     processTemplates(this);
   }
 
+  /** @protected */
+  connectedCallback() {
+    super.connectedCallback();
+    this.__virtualizer.connectedChanged(true);
+  }
+
+  /** @protected */
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this.__virtualizer.connectedChanged(false);
+  }
+
   /**
    * Scroll to a specific index in the virtual list.
    *
