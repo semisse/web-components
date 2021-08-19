@@ -10,8 +10,12 @@ import { ThemableMixin } from '@vaadin/vaadin-themable-mixin/vaadin-themable-mix
 import { ElementMixin } from '@vaadin/vaadin-element-mixin/vaadin-element-mixin.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class';
 import { IronResizableBehavior } from '@polymer/iron-resizable-behavior';
+import 'blocking-elements';
+import 'wicg-inert';
 import './safe-area-inset.js';
 import './detect-ios-navbar.js';
+
+const blockingElements = document.$blockingElements;
 
 /**
  * `<vaadin-app-layout>` is a Web Component providing a quick and easy way to get a common application layout structure done.
@@ -207,7 +211,7 @@ class AppLayoutElement extends ElementMixin(ThemableMixin(mixinBehaviors([IronRe
           width: 16em;
           box-sizing: border-box;
           padding: var(--safe-area-inset-top) 0 var(--safe-area-inset-bottom) var(--safe-area-inset-left);
-          outline: none;
+          /* outline: none; */
         }
 
         :host([drawer-opened]) [part='drawer'] {
@@ -290,7 +294,7 @@ class AppLayoutElement extends ElementMixin(ThemableMixin(mixinBehaviors([IronRe
       <div part="drawer" id="drawer">
         <slot name="drawer" id="drawerSlot"></slot>
       </div>
-      <div content>
+      <div id="content" content>
         <slot></slot>
       </div>
       <div part="navbar" id="navbarBottom" bottom hidden>
@@ -432,16 +436,31 @@ class AppLayoutElement extends ElementMixin(ThemableMixin(mixinBehaviors([IronRe
   }
 
   /** @private */
-  _drawerOpenedObserver() {
+  _drawerOpenedObserver(drawerOpened, oldDrawerOpened) {
     const drawer = this.$.drawer;
 
-    drawer.removeAttribute('tabindex');
+    this.__setDrawerInert(drawerOpened ? false : true);
 
     if (this.overlay) {
-      if (this.drawerOpened) {
-        drawer.setAttribute('tabindex', 0);
-        drawer.focus();
+      if (drawerOpened) {
+        this.__focusDrawer();
+
+        // Prevent focusing the content
+        blockingElements.push(drawer);
+        this.__setContentInert(true);
+
         this._updateDrawerHeight();
+      } else if (oldDrawerOpened) {
+        // Restore focusing the content
+        blockingElements.remove(drawer);
+        this.__setContentInert(false);
+
+        // Move focus to drawer toggle when exiting overlay mode
+        const toggle = this.querySelector('vaadin-drawer-toggle');
+        if (toggle) {
+          toggle.focus();
+          toggle.setAttribute('focus-ring', 'focus');
+        }
       }
     }
 
@@ -530,11 +549,17 @@ class AppLayoutElement extends ElementMixin(ThemableMixin(mixinBehaviors([IronRe
       drawer.setAttribute('role', 'dialog');
       drawer.setAttribute('aria-modal', 'true');
       drawer.setAttribute('aria-label', 'drawer');
+
+      if (!this.drawerOpened) {
+        this.__setDrawerInert(true);
+      }
     } else {
       if (this._drawerStateSaved) {
         this.drawerOpened = this._drawerStateSaved;
         this._drawerStateSaved = null;
       }
+
+      this.__setDrawerInert(false);
 
       drawer.removeAttribute('role');
       drawer.removeAttribute('aria-modal');
@@ -548,6 +573,49 @@ class AppLayoutElement extends ElementMixin(ThemableMixin(mixinBehaviors([IronRe
     }
 
     // TODO(jouni): ARIA attributes. The drawer should act similar to a modal dialog when in ”overlay” mode
+  }
+
+  /** @private */
+  __focusDrawer() {
+    const drawer = this.$.drawer;
+
+    // Wait for animation before focusing drawer
+    // to make sure VoiceOver has proper outline
+    const focusDrawer = () => {
+      // Move focus to the drawer
+      drawer.setAttribute('tabindex', '0');
+      drawer.focus();
+    };
+
+    if (getComputedStyle(this).getPropertyValue('--vaadin-app-layout-transition') === 'none') {
+      focusDrawer();
+    } else {
+      const listener = () => {
+        drawer.removeEventListener('transitionend', listener);
+        focusDrawer();
+      };
+
+      drawer.addEventListener('transitionend', listener);
+    }
+  }
+
+  /** @private */
+  __setContentInert(inert) {
+    this.$.navbarTop.inert = inert;
+    this.$.navbarBottom.inert = inert;
+    this.$.content.inert = inert;
+  }
+
+  /** @private */
+  __setDrawerInert(inert) {
+    const drawer = this.$.drawer;
+
+    if (inert) {
+      drawer.inert = true;
+    } else {
+      drawer.removeAttribute('tabindex');
+      drawer.inert = false;
+    }
   }
 
   /** @private */
