@@ -8,6 +8,7 @@ export class Virtualizer {
    * @property {HTMLElement} scrollTarget Reference to the scrolling element
    * @property {HTMLElement} scrollContainer Reference to a wrapper for the item elements (or a slot) inside the scrollTarget
    * @property {HTMLElement | undefined} elementsContainer Reference to the container in which the item elements are placed, defaults to scrollContainer
+   * @property {HTMLElement | undefined} connectedObserverContainer Reference to the container in which the virtualizer can create a hidden connection listener element.
    * @property {boolean | undefined} reorderElements Determines whether the physical item elements should be kept in order in the DOM
    * @param {VirtualizerConfig} config Configuration for the virtualizer
    */
@@ -79,15 +80,5 @@ export class Virtualizer {
    */
   get lastVisibleIndex() {
     return this.__adapter.adjustedLastVisibleIndex;
-  }
-
-  /**
-   * Invoke whenever the scroll target gets disconnected/reconnected to the DOM to avoid memory leaks.
-   *
-   * @method connectedChanged
-   * @param {boolean} connected Is the scroll target connected
-   */
-  connectedChanged(connected) {
-    this.__adapter.connectedChanged(connected);
   }
 }

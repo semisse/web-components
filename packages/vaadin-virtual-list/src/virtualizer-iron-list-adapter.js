@@ -1,6 +1,7 @@
 import { timeOut, animationFrame } from './async.js';
 import { Debouncer, flush } from './debounce.js';
 import { ironList } from './iron-list.js';
+import './virtualizer-connected-observer.js';
 
 // iron-list can by default handle sizes up to around 100000.
 // When the size is larger than MAX_VIRTUAL_COUNT _vidxOffset is used
@@ -8,7 +9,15 @@ const MAX_VIRTUAL_COUNT = 100000;
 const OFFSET_ADJUST_MIN_THRESHOLD = 1000;
 
 export class IronListAdapter {
-  constructor({ createElements, updateElement, scrollTarget, scrollContainer, elementsContainer, reorderElements }) {
+  constructor({
+    createElements,
+    updateElement,
+    scrollTarget,
+    scrollContainer,
+    elementsContainer,
+    reorderElements,
+    connectedObserverContainer
+  }) {
     this.isAttached = true;
     this._vidxOffset = 0;
     this.createElements = createElements;
@@ -17,6 +26,7 @@ export class IronListAdapter {
     this.scrollContainer = scrollContainer;
     this.elementsContainer = elementsContainer || scrollContainer;
     this.reorderElements = reorderElements;
+    this.connectedObserverContainer = connectedObserverContainer;
 
     this.__safari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
@@ -52,6 +62,12 @@ export class IronListAdapter {
           this.__reorderElements();
         }
       });
+    }
+
+    if (this.connectedObserverContainer) {
+      const connectedObserver = document.createElement('virtualizer-connected-observer');
+      connectedObserver.__virtualizer = this;
+      this.connectedObserverContainer.appendChild(connectedObserver);
     }
   }
 
@@ -239,6 +255,10 @@ export class IronListAdapter {
 
   /** @private */
   __observeResize(el) {
+    if (!this.connectedObserverContainer) {
+      return;
+    }
+
     if (!this.__observedElements) {
       this.__observedElements = new Set();
     }

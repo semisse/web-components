@@ -105,22 +105,11 @@ class VirtualListElement extends ElementMixin(ThemableMixin(PolymerElement)) {
       updateElement: this.__updateElement.bind(this),
       elementsContainer: this,
       scrollTarget: this,
-      scrollContainer: this.shadowRoot.querySelector('#items')
+      scrollContainer: this.shadowRoot.querySelector('#items'),
+      connectedObserverContainer: this.shadowRoot.querySelector('#items')
     });
 
     processTemplates(this);
-  }
-
-  /** @protected */
-  connectedCallback() {
-    super.connectedCallback();
-    this.__virtualizer.connectedChanged(true);
-  }
-
-  /** @protected */
-  disconnectedCallback() {
-    super.disconnectedCallback();
-    this.__virtualizer.connectedChanged(false);
   }
 
   /**

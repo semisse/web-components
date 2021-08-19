@@ -410,14 +410,12 @@ class GridElement extends ElementMixin(
     super.connectedCallback();
     this.isAttached = true;
     this.recalculateColumnWidths();
-    this.__virtualizer.connectedChanged(true);
   }
 
   /** @protected */
   disconnectedCallback() {
     super.disconnectedCallback();
     this.isAttached = false;
-    this.__virtualizer.connectedChanged(false);
   }
 
   /** @private */
@@ -471,7 +469,8 @@ class GridElement extends ElementMixin(
       updateElement: this._updateScrollerItem.bind(this),
       scrollContainer: this.$.items,
       scrollTarget: this.$.table,
-      reorderElements: true
+      reorderElements: true,
+      connectedObserverContainer: this.$.scroller
     });
 
     new ResizeObserver(() => setTimeout(() => this.__updateFooterPositioning())).observe(this.$.footer);
