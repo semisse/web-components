@@ -22,6 +22,13 @@ class MenuBarSubmenuElement extends ContextMenuElement {
     this.openOn = 'opensubmenu';
   }
 
+  /** @protected */
+  ready() {
+    super.ready();
+
+    this.$.overlay.restoreFocusOnClose = true;
+  }
+
   /**
    * Overriding the observer to not add global "contextmenu" listener.
    */

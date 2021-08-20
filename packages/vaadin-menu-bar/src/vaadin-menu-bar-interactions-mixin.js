@@ -118,7 +118,7 @@ export const InteractionsMixin = (superClass) =>
             this.__openSubMenu(button, event, { focusLast: true });
           }
         } else if (event.keyCode === 27 && button === this._expandedButton) {
-          this._close(true);
+          this._close();
         } else {
           this._navigateByKey(event);
         }
@@ -250,7 +250,7 @@ export const InteractionsMixin = (superClass) =>
       if (item) {
         const list = item.parentNode;
         if (e.keyCode === 38 && item === list.items[0]) {
-          this._close(true);
+          this._close();
         }
         // ArrowLeft, or ArrowRight on non-parent submenu item
         if (e.keyCode === 37 || (e.keyCode === 39 && !item._item.children)) {
@@ -369,18 +369,16 @@ export const InteractionsMixin = (superClass) =>
 
     /** @private */
     __onEscapeClose() {
-      this.__deactivateButton(true);
+      this.__restoreFocus();
     }
 
     /** @private */
-    __deactivateButton(restoreFocus) {
+    __restoreFocus() {
       const button = this._expandedButton;
       if (button && button.hasAttribute('expanded')) {
         button.removeAttribute('expanded');
         button.setAttribute('aria-expanded', 'false');
-        if (restoreFocus) {
-          this._focusButton(button);
-        }
+        this._focusButton(button);
         this._expandedButton = null;
       }
     }
@@ -389,9 +387,9 @@ export const InteractionsMixin = (superClass) =>
      * @param {boolean} restoreFocus
      * @protected
      */
-    _close(restoreFocus) {
+    _close() {
       this.style.pointerEvents = '';
-      this.__deactivateButton(restoreFocus);
+      this.__restoreFocus();
       this._subMenu.opened && this._subMenu.close();
     }
   };

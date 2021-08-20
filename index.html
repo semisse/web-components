@@ -12,23 +12,24 @@
       }
     </style>
 
-    <iron-component-page></iron-component-page>
+    <vaadin-menu-bar></vaadin-menu-bar>
 
     <script type="module">
-      import '@polymer/iron-component-page/iron-component-page.js';
+      import '@vaadin/vaadin-menu-bar/vaadin-menu-bar.js';
 
-      requestAnimationFrame(() => {
-        setTimeout(() => {
-          const page = document.querySelector('iron-component-page');
-          const nav = page.shadowRoot.querySelector('iron-doc-nav');
-          const repeat = nav.shadowRoot.querySelector('dom-repeat');
-          // hide mixins section from the navigation
-          repeat.addEventListener('dom-change', () => {
-            const sections = nav.shadowRoot.querySelectorAll('section');
-            sections[sections.length - 2].setAttribute('hidden', '');
-          });
-        });
-      });
+      const element = document.querySelector('vaadin-menu-bar');
+      element.items = [
+        { text: 'Home' },
+        {
+          text: 'Reports',
+          children: [
+            { text: 'View Reports', children: [{ text: 'New' }, { text: 'Archived' }] },
+            { text: 'Generate Report' }
+          ]
+        },
+        { text: 'Dashboard', disabled: true },
+        { text: 'Help' }
+      ];
     </script>
   </body>
 </html>

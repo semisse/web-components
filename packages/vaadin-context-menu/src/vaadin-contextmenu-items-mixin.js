@@ -281,6 +281,7 @@ export const ItemsMixin = (superClass) =>
 
         const subMenu = root.querySelector(is);
         subMenu.$.overlay.modeless = true;
+        subMenu.$.overlay.restoreFocusOnClose = true;
         subMenu.openOn = 'opensubmenu';
 
         menu.addEventListener('opened-changed', (e) => !e.detail.value && subMenu.close());
