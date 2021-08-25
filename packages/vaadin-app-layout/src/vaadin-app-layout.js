@@ -558,6 +558,7 @@ class AppLayoutElement extends ElementMixin(ThemableMixin(mixinBehaviors([IronRe
       }
 
       this.__setDrawerInert(false);
+      blockingElements.remove(drawer);
 
       drawer.removeAttribute('role');
       drawer.removeAttribute('aria-modal');
