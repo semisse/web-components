@@ -447,13 +447,11 @@ class AppLayoutElement extends ElementMixin(ThemableMixin(mixinBehaviors([IronRe
 
         // Prevent focusing the content
         blockingElements.push(drawer);
-        this.__setContentInert(true);
 
         this._updateDrawerHeight();
       } else if (oldDrawerOpened) {
         // Restore focusing the content
         blockingElements.remove(drawer);
-        this.__setContentInert(false);
 
         // Move focus to drawer toggle when exiting overlay mode
         const toggle = this.querySelector('vaadin-drawer-toggle');
@@ -597,13 +595,6 @@ class AppLayoutElement extends ElementMixin(ThemableMixin(mixinBehaviors([IronRe
 
       drawer.addEventListener('transitionend', listener);
     }
-  }
-
-  /** @private */
-  __setContentInert(inert) {
-    this.$.navbarTop.inert = inert;
-    this.$.navbarBottom.inert = inert;
-    this.$.content.inert = inert;
   }
 
   /** @private */
