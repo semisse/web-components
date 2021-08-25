@@ -290,7 +290,7 @@ class AppLayoutElement extends ElementMixin(ThemableMixin(mixinBehaviors([IronRe
       <div part="navbar" id="navbarTop">
         <slot name="navbar"></slot>
       </div>
-      <div part="backdrop" on-click="_close" on-touchstart="_close"></div>
+      <div part="backdrop" id="backdrop" on-click="_close" on-touchstart="_close"></div>
       <div part="drawer" id="drawer">
         <slot name="drawer" id="drawerSlot"></slot>
       </div>
@@ -437,22 +437,16 @@ class AppLayoutElement extends ElementMixin(ThemableMixin(mixinBehaviors([IronRe
 
   /** @private */
   _drawerOpenedObserver(drawerOpened, oldDrawerOpened) {
-    const drawer = this.$.drawer;
-
-    this.__setDrawerInert(drawerOpened ? false : true);
+    this.__setDrawerInert(!drawerOpened);
 
     if (this.overlay) {
+      // Prevent focusing the content when the drawer is opened as a modal overlay
+      this.__setBlockingModalOverlay(drawerOpened);
+
       if (drawerOpened) {
         this.__focusDrawer();
-
-        // Prevent focusing the content
-        blockingElements.push(drawer);
-
         this._updateDrawerHeight();
       } else if (oldDrawerOpened) {
-        // Restore focusing the content
-        blockingElements.remove(drawer);
-
         // Move focus to drawer toggle when exiting overlay mode
         const toggle = this.querySelector('vaadin-drawer-toggle');
         if (toggle) {
@@ -607,6 +601,18 @@ class AppLayoutElement extends ElementMixin(ThemableMixin(mixinBehaviors([IronRe
     } else {
       drawer.removeAttribute('tabindex');
       drawer.inert = false;
+    }
+  }
+
+  __setBlockingModalOverlay(blocking) {
+    const drawer = this.$.drawer;
+    const backdrop = this.$.backdrop;
+    if (blocking) {
+      blockingElements.push(drawer);
+      // If the backdrop is inert, it can't be clicked to close the overlay
+      backdrop.removeAttribute('inert');
+    } else {
+      blockingElements.remove(drawer);
     }
   }
 
