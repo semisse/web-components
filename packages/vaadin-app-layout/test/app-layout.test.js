@@ -238,22 +238,22 @@ describe('vaadin-app-layout', () => {
         const content = layout.$.content;
         const backdrop = layout.shadowRoot.querySelector('[part="backdrop"]');
 
-        expect(content.hasAttribute('inert')).to.be.true;
+        expect(content.inert).to.be.true;
 
-        expect(drawer.hasAttribute('inert')).to.be.false;
-        expect(backdrop.hasAttribute('inert')).to.be.false;
+        expect(drawer.inert).to.be.false;
+        expect(backdrop.inert).to.be.false;
       });
 
       it('should remove content inert when leaving overlay mode', () => {
         layout.drawerOpened = true;
 
         const content = layout.$.content;
-        expect(content.hasAttribute('inert')).to.be.true;
+        expect(content.inert).to.be.true;
 
         layout.style.setProperty('--vaadin-app-layout-drawer-overlay', 'false');
         layout._updateOverlayMode();
 
-        expect(content.hasAttribute('inert')).to.be.false;
+        expect(content.inert).to.be.false;
       });
     });
   });

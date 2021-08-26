@@ -610,7 +610,7 @@ class AppLayoutElement extends ElementMixin(ThemableMixin(mixinBehaviors([IronRe
     if (blocking) {
       blockingElements.push(drawer);
       // If the backdrop is inert, it can't be clicked to close the overlay
-      backdrop.removeAttribute('inert');
+      backdrop.inert = false;
     } else {
       blockingElements.remove(drawer);
     }
