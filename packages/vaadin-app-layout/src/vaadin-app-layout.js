@@ -603,6 +603,7 @@ class AppLayoutElement extends ElementMixin(ThemableMixin(mixinBehaviors([IronRe
     }
   }
 
+  /** @private */
   __setBlockingModalOverlay(blocking) {
     const drawer = this.$.drawer;
     const backdrop = this.$.backdrop;
