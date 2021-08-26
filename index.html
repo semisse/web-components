@@ -7,28 +7,28 @@
   </head>
   <body>
     <style>
-      html, body {
-        height: 100%;
-        margin: 0;
+      iron-component-page {
+        --app-drawer-width: 320px;
       }
     </style>
 
-    <vaadin-app-layout>
-      <vaadin-drawer-toggle slot="navbar"></vaadin-drawer-toggle>
-      <h2 slot="navbar">App Name</h2>
-      <section slot="drawer">
-        Drawer content
-        <button>Button 1</button>
-      </section>
-      <main>
-        Page content
-        <button>Button 2</button>
-      </main>
-    </vaadin-app-layout>
+    <iron-component-page></iron-component-page>
 
     <script type="module">
-      import '@vaadin/vaadin-app-layout/vaadin-app-layout.js';
-      import '@vaadin/vaadin-app-layout/vaadin-drawer-toggle.js';
+      import '@polymer/iron-component-page/iron-component-page.js';
+
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          const page = document.querySelector('iron-component-page');
+          const nav = page.shadowRoot.querySelector('iron-doc-nav');
+          const repeat = nav.shadowRoot.querySelector('dom-repeat');
+          // hide mixins section from the navigation
+          repeat.addEventListener('dom-change', () => {
+            const sections = nav.shadowRoot.querySelectorAll('section');
+            sections[sections.length - 2].setAttribute('hidden', '');
+          });
+        });
+      });
     </script>
   </body>
 </html>

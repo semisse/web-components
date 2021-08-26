@@ -20,7 +20,7 @@
     "analyze": "polymer analyze packages/**/vaadin-*.js > analysis.json && node scripts/prepareDocs.js",
     "debug": "web-test-runner --watch",
     "dist": "rimraf dist && yarn analyze && rollup -c rollup.config.js && cp analysis.json dist",
-    "docs": "web-dev-server --node-resolve --open",
+    "docs": "yarn analyze && web-dev-server --node-resolve --open",
     "icons": "lerna run icons",
     "lint": "npm-run-all --parallel lint:*",
     "lint:css": "stylelint packages/**/src/*.js packages/**/theme/**/*-styles.js",
