@@ -211,7 +211,6 @@ class AppLayoutElement extends ElementMixin(ThemableMixin(mixinBehaviors([IronRe
           width: 16em;
           box-sizing: border-box;
           padding: var(--safe-area-inset-top) 0 var(--safe-area-inset-bottom) var(--safe-area-inset-left);
-          /* outline: none; */
         }
 
         :host([drawer-opened]) [part='drawer'] {
