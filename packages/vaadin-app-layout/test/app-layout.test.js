@@ -115,7 +115,7 @@ describe('vaadin-app-layout', () => {
     beforeEach(async () => {
       layout = fixtureSync(`
         <vaadin-app-layout>
-          <vaadin-drawer-toggle slot="navbar"></vaadin-drawer-toggle>
+          <vaadin-drawer-toggle id="toggle" slot="navbar"></vaadin-drawer-toggle>
           <h2 slot="navbar">App name</h2>
           <section slot="drawer">
             <p>Item 1</p>
@@ -254,6 +254,20 @@ describe('vaadin-app-layout', () => {
         layout._updateOverlayMode();
 
         expect(content.inert).to.be.false;
+      });
+
+      it('should focus the toggle when closing the drawer in overlay mode', () => {
+        const toggle = document.getElementById('toggle');
+        layout.drawerOpened = true;
+
+        layout.style.setProperty('--vaadin-app-layout-drawer-overlay', 'true');
+        layout._updateOverlayMode();
+
+        expect(document.activeElement === toggle).to.be.false;
+
+        layout.drawerOpened = false;
+
+        expect(document.activeElement === toggle).to.be.true;
       });
     });
   });
