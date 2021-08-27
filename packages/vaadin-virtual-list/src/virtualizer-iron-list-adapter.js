@@ -160,6 +160,9 @@ export class IronListAdapter {
 
     // Change the size
     this.__size = size;
+
+    this._updateMetrics();
+
     this._itemsChanged({
       path: 'items'
     });
