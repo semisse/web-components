@@ -1004,6 +1004,12 @@ registerStyles(
     :host([dir='rtl']) .highcharts-menu {
       box-shadow: -3px 3px 10px #888;
     }
+
+    /* https://github.com/highcharts/highcharts/issues/16282 */
+    /* without this __mutationCallback always calls __reflow */
+    ul[aria-hidden='false'] {
+      margin: 0px;
+    }
   `,
   { moduleId: 'vaadin-chart-default-theme' }
 );
