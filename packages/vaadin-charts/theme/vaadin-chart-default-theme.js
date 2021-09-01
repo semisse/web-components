@@ -29,6 +29,9 @@ registerStyles(
       -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
       font-family: 'Lucida Grande', 'Lucida Sans Unicode', Arial, Helvetica, sans-serif;
       font-size: 12px;
+      user-select: none;
+      touch-action: manipulation;
+      outline: none;
     }
 
     .highcharts-container svg {
@@ -201,6 +204,12 @@ registerStyles(
       stroke-width: 2px;
       stroke-linecap: round;
       stroke-linejoin: round;
+    }
+
+    .highcharts-empty-series {
+      stroke-width: 1px;
+      fill: none;
+      stroke: #cccccc;
     }
 
     .highcharts-state-hover .highcharts-graph {
@@ -789,6 +798,21 @@ registerStyles(
 
     .highcharts-candlestick-series .highcharts-point-up {
       fill: #fff;
+    }
+
+    .highcharts-hollowcandlestick-series .highcharts-point-down {
+      fill: #f21313;
+      stroke: #f21313;
+    }
+
+    .highcharts-hollowcandlestick-series .highcharts-point-down-bearish-up {
+      fill: #06b535;
+      stroke: #06b535;
+    }
+
+    .highcharts-hollowcandlestick-series .highcharts-point-up {
+      fill: transparent;
+      stroke: #06b535;
     }
 
     .highcharts-ohlc-series .highcharts-point-hover {
