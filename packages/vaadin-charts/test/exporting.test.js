@@ -4,6 +4,8 @@ import { PolymerElement, html } from '@polymer/polymer/polymer-element.js';
 import { registerStyles, css } from '@vaadin/vaadin-themable-mixin/register-styles.js';
 import { fixtureSync, oneEvent, nextRender } from '@vaadin/testing-helpers';
 import Highcharts from 'highcharts/es-modules/masters/highstock.src.js';
+import HttpUtilities from 'highcharts/es-modules/Core/HttpUtilities.js';
+
 import '../vaadin-chart.js';
 
 registerStyles(
@@ -56,7 +58,7 @@ describe('vaadin-chart exporting', () => {
 
   before(() => {
     // Prevent form submit
-    sinon.stub(Highcharts, 'post');
+    sinon.stub(HttpUtilities, 'post');
     // Hook into Highcharts events
     fireEventSpy = sinon.spy(Highcharts, 'fireEvent');
   });
