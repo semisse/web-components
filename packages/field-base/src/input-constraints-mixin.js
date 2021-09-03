@@ -6,9 +6,10 @@
 import { dedupingMixin } from '@polymer/polymer/lib/utils/mixin.js';
 import { InputMixin } from './input-mixin.js';
 import { ValidateMixin } from './validate-mixin.js';
+import { ForwardInputPropsMixin } from './forward-input-props-mixin.js';
 
 const InputConstraintsMixinImplementation = (superclass) =>
-  class InputConstraintsMixinClass extends ValidateMixin(InputMixin(superclass)) {
+  class InputConstraintsMixinClass extends ForwardInputPropsMixin(ValidateMixin(InputMixin(superclass))) {
     static get constraints() {
       return ['required'];
     }

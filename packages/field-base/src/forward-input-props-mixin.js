@@ -4,24 +4,27 @@
  * This program is available under Apache License Version 2.0, available at https://vaadin.com/license/
  */
 import { dedupingMixin } from '@polymer/polymer/lib/utils/mixin.js';
-import { InputConstraintsMixin } from './input-constraints-mixin.js';
+import { InputSlotMixin } from './input-slot-mixin.js';
+import { ForwardPropsMixin } from './forward-props-mixin.js';
 
 const ForwardInputPropsMixinImplementation = (superclass) =>
-  class ForwardInputPropsMixinClass extends InputConstraintsMixin(superclass) {
+  class ForwardInputPropsMixinClass extends ForwardPropsMixin(InputSlotMixin(superclass)) {
     static get properties() {
       return {
         /**
          * The name of this field.
          */
         name: {
-          type: String
+          type: String,
+          reflectToAttribute: true
         },
 
         /**
          * A hint to the user of what can be entered in the field.
          */
         placeholder: {
-          type: String
+          type: String,
+          reflectToAttribute: true
         },
 
         /**
@@ -37,70 +40,18 @@ const ForwardInputPropsMixinImplementation = (superclass) =>
          * The text usually displayed in a tooltip popup when the mouse is over the field.
          */
         title: {
-          type: String
+          type: String,
+          reflectToAttribute: true
         }
       };
     }
 
     static get forwardProps() {
-      return ['name', 'type', 'placeholder', 'readonly', 'required', 'invalid', 'title'];
+      return ['name', 'type', 'placeholder', 'required', 'readonly', 'invalid', 'title'];
     }
 
-    /** @protected */
-    ready() {
-      // Create observer dynamically to allow subclasses to override forwardProps
-      // Note, this needs to be done before calling `super.ready()` to propagate changes
-      // to the validation constraints, e.g. when setting `required` property to `false`,
-      // before the observer created by `InputConstraintsMixin` to validate properly.
-      this._createMethodObserver(`_forwardPropsChanged(${this.constructor.forwardProps.join(', ')})`);
-
-      super.ready();
-    }
-
-    /** @protected */
-    _inputElementChanged(input) {
-      super._inputElementChanged(input);
-
-      if (input) {
-        // Propagate initially defined properties to the slotted input
-        this._propagateHostAttributes(
-          this.constructor.forwardProps.map((attr) => this[attr] || this.getAttribute(attr))
-        );
-      }
-    }
-
-    /** @private */
-    _forwardPropsChanged(...attributesValues) {
-      this._propagateHostAttributes(attributesValues);
-    }
-
-    /** @private */
-    _propagateHostAttributes(attributesValues) {
-      const input = this.inputElement;
-      const attributeNames = this.constructor.forwardProps;
-
-      attributeNames.forEach((attr, index) => {
-        const value = attributesValues[index];
-        if (attr === 'invalid') {
-          this._setOrToggleAttribute(attr, value, input);
-          this._setOrToggleAttribute('aria-invalid', value ? 'true' : false, input);
-        } else {
-          this._setOrToggleAttribute(attr, value, input);
-        }
-      });
-    }
-
-    /** @protected */
-    _setOrToggleAttribute(name, value, node) {
-      if (!name || !node) {
-        return;
-      }
-
-      if (value) {
-        node.setAttribute(name, typeof value === 'boolean' ? '' : value);
-      } else {
-        node.removeAttribute(name);
-      }
+    get _forwardPropsTarget() {
+      return this.inputElement;
     }
   };
 

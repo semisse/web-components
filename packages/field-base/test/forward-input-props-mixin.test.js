@@ -3,11 +3,11 @@ import { fixtureSync } from '@vaadin/testing-helpers';
 import { PolymerElement, html } from '@polymer/polymer/polymer-element.js';
 import { ForwardInputPropsMixin } from '../src/forward-input-props-mixin.js';
 import { AriaLabelMixin } from '../src/aria-label-mixin.js';
-import { InputSlotMixin } from '../src/input-slot-mixin.js';
+import { ValidateMixin } from '../src/validate-mixin.js';
 
 customElements.define(
   'forward-input-props-mixin-element',
-  class extends ForwardInputPropsMixin(AriaLabelMixin(InputSlotMixin(PolymerElement))) {
+  class extends ForwardInputPropsMixin(AriaLabelMixin(ValidateMixin(PolymerElement))) {
     static get template() {
       return html`<slot name="label"></slot><slot name="input"></slot>`;
     }
@@ -24,12 +24,12 @@ describe('forward-input-props-mixin', () => {
     });
 
     it('should propagate name attribute to the input', () => {
-      expect(input.name).to.equal('foo');
+      expect(input.getAttribute('name')).to.equal('foo');
     });
 
     it('should propagate name property to the input', () => {
       element.name = 'bar';
-      expect(input.name).to.equal('bar');
+      expect(input.getAttribute('name')).to.equal('bar');
     });
   });
 
@@ -40,12 +40,12 @@ describe('forward-input-props-mixin', () => {
     });
 
     it('should propagate title attribute to the input', () => {
-      expect(input.title).to.equal('foo');
+      expect(input.getAttribute('title')).to.equal('foo');
     });
 
     it('should propagate title property to the input', () => {
       element.title = 'bar';
-      expect(input.title).to.equal('bar');
+      expect(input.getAttribute('title')).to.equal('bar');
     });
   });
 
