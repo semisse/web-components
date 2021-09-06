@@ -15,8 +15,8 @@ registerStyles(
     }
 
     [part='input-field'] ::slotted(textarea) {
+      padding-top: 0;
       margin-top: 4px;
-      padding: 0;
     }
 
     [part='input-field'] ::slotted(textarea) {
