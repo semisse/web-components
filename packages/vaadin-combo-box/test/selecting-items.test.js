@@ -2,9 +2,9 @@ import { expect } from '@esm-bundle/chai';
 import sinon from 'sinon';
 import { aTimeout, click, fixtureSync, fire } from '@vaadin/testing-helpers';
 import { flush } from '@polymer/polymer/lib/utils/flush.js';
+import { getAllItems, getFirstItem, scrollToIndex } from './helpers.js';
 import './not-animated-styles.js';
 import '../vaadin-combo-box.js';
-import { scrollToIndex } from './helpers.js';
 
 describe('selecting items', () => {
   let comboBox;
@@ -33,7 +33,7 @@ describe('selecting items', () => {
 
     const clickSpy = sinon.spy();
     document.addEventListener('click', clickSpy);
-    click(comboBox.$.overlay._selector);
+    click(comboBox.$.overlay._scroller);
     document.removeEventListener('click', clickSpy);
     expect(clickSpy.calledOnce).not.to.be.true;
   });
@@ -41,7 +41,7 @@ describe('selecting items', () => {
   it('should fire `selection-changed` when clicked on an item', () => {
     comboBox.opened = true;
     flush();
-    click(comboBox.$.overlay._selector.querySelector('vaadin-combo-box-item'));
+    getFirstItem(comboBox).click();
     expect(selectionChangedSpy.calledOnce).to.be.true;
     expect(selectionChangedSpy.args[0][0].detail.item).to.eql(comboBox.items[0]);
   });
@@ -64,7 +64,7 @@ describe('selecting items', () => {
       comboBox.$.overlay._scroller.removeEventListener('scroll', listener);
 
       setTimeout(() => {
-        const firstItem = comboBox.$.overlay._selector.querySelector('vaadin-combo-box-item');
+        const firstItem = getFirstItem(comboBox);
         click(firstItem);
 
         expect(selectionChangedSpy.calledOnce).to.be.true;
@@ -92,7 +92,7 @@ describe('selecting items', () => {
     comboBox.open();
     flush();
 
-    comboBox.$.overlay._selector.querySelector('vaadin-combo-box-item').click();
+    getFirstItem(comboBox).click();
 
     expect(comboBox.opened).to.equal(false);
   });
@@ -145,7 +145,7 @@ describe('selecting items', () => {
 
   it('should allow changing the value in value-changed listener', (done) => {
     comboBox.open();
-    const items = comboBox.$.overlay._selector.querySelectorAll('vaadin-combo-box-item');
+    const items = getAllItems(comboBox);
 
     comboBox.addEventListener('value-changed', () => {
       if (comboBox.value === 'foo') {
@@ -165,7 +165,7 @@ describe('selecting items', () => {
 
   it('should allow clearing the value in value-changed listener', (done) => {
     comboBox.open();
-    const item = comboBox.$.overlay._selector.querySelector('vaadin-combo-box-item');
+    const item = getFirstItem(comboBox);
 
     comboBox.addEventListener('value-changed', () => {
       if (comboBox.value) {
@@ -260,9 +260,7 @@ describe('selecting items', () => {
 
     it('should fire when selecting an item via click', () => {
       comboBox.open();
-      const firstItem = comboBox.$.overlay._selector.querySelector('vaadin-combo-box-item');
-      click(firstItem);
-
+      getFirstItem(comboBox).click();
       expect(changeSpy.callCount).to.equal(1);
     });
   });

@@ -1,9 +1,9 @@
 import { expect } from '@esm-bundle/chai';
 import sinon from 'sinon';
 import { fixtureSync, nextFrame } from '@vaadin/testing-helpers';
+import { getFirstItem, getViewportItems } from './helpers.js';
 import './not-animated-styles.js';
 import '../vaadin-combo-box.js';
-import { getViewportItems } from './helpers.js';
 
 describe('Properties', () => {
   let comboBox;
@@ -213,7 +213,7 @@ describe('Properties', () => {
 
         comboBox.open();
         comboBox.inputElement.value = 'a';
-        comboBox.$.overlay._selector.querySelector('vaadin-combo-box-item').click();
+        getFirstItem(comboBox).click();
         expect(spy.called).to.be.false;
       });
 
@@ -422,7 +422,7 @@ describe('theme attribute', () => {
   it('should propagate theme attribute to item', () => {
     comboBox.items = ['bar', 'baz'];
     comboBox.open();
-    expect(comboBox.$.overlay._selector.querySelector('vaadin-combo-box-item').getAttribute('theme')).to.equal('foo');
+    expect(getFirstItem(comboBox).getAttribute('theme')).to.equal('foo');
   });
 });
 

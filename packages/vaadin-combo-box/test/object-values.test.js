@@ -1,7 +1,7 @@
 import { expect } from '@esm-bundle/chai';
 import sinon from 'sinon';
 import { aTimeout, fixtureSync, fire } from '@vaadin/testing-helpers';
-import { getViewportItems } from './helpers';
+import { getFirstItem, getViewportItems } from './helpers.js';
 import './not-animated-styles.js';
 import '../vaadin-combo-box.js';
 
@@ -43,8 +43,7 @@ describe('object values', () => {
 
     it('should use the default label property in overlay items', async () => {
       await aTimeout(1);
-      const firstItem = comboBox.$.overlay._selector.querySelector('vaadin-combo-box-item');
-      expect(firstItem.shadowRoot.textContent).to.contain('foo');
+      expect(getFirstItem(comboBox).shadowRoot.textContent).to.contain('foo');
     });
 
     it('should use the provided label property', () => {

@@ -4,7 +4,7 @@ import { fixtureSync, nextFrame, aTimeout, enterKeyDown, fire } from '@vaadin/te
 import { flush } from '@polymer/polymer/lib/utils/flush.js';
 import '@polymer/iron-input/iron-input.js';
 import { ComboBoxPlaceholder } from '../src/vaadin-combo-box-placeholder.js';
-import { getViewportItems, makeItems } from './helpers.js';
+import { getAllItems, getFirstItem, getViewportItems, getVisibleItemsCount, makeItems } from './helpers.js';
 import './not-animated-styles.js';
 import '../vaadin-combo-box.js';
 import '../vaadin-combo-box-light.js';
@@ -297,9 +297,9 @@ describe('lazy loading', () => {
             setTimeout(() => {
               callback(items, 10);
               setTimeout(() => {
-                const renderedTexts = Array.from(
-                  comboBox.$.overlay._selector.querySelectorAll('vaadin-combo-box-item')
-                ).map((i) => i.shadowRoot.querySelector('#content').innerText);
+                const renderedTexts = getAllItems(comboBox).map(
+                  (i) => i.shadowRoot.querySelector('#content').innerText
+                );
                 expect(renderedTexts).to.eql(items);
                 done();
               });
@@ -336,8 +336,6 @@ describe('lazy loading', () => {
       });
 
       describe('when selecting item', () => {
-        const clickFirstItem = () => comboBox.$.overlay._selector.querySelector('vaadin-combo-box-item').click();
-
         beforeEach(() => {
           comboBox.dataProvider = spyDataProvider;
           comboBox.open();
@@ -346,7 +344,7 @@ describe('lazy loading', () => {
 
         it('should not be invoked', () => {
           spyDataProvider.resetHistory();
-          clickFirstItem();
+          getFirstItem(comboBox).click();
           expect(comboBox.selectedItem).to.eql('item 0');
           expect(spyDataProvider.callCount).to.eql(0);
         });
@@ -359,7 +357,7 @@ describe('lazy loading', () => {
           flush();
           spyDataProvider.resetHistory();
 
-          clickFirstItem();
+          getFirstItem(comboBox).click();
           expect(comboBox.selectedItem).to.eql('item 1');
           expect(spyDataProvider.callCount).to.eql(0);
         });
@@ -405,7 +403,7 @@ describe('lazy loading', () => {
           comboBox.size = SIZE;
           comboBox.dataProvider = spyAsyncDataProvider;
           comboBox.opened = true;
-          const itemElement = comboBox.$.overlay._selector.querySelector('vaadin-combo-box-item');
+          const itemElement = getFirstItem(comboBox);
           expect(itemElement.item).to.be.instanceof(ComboBoxPlaceholder);
           itemElement.click();
           expect(comboBox.opened).to.equal(true);
@@ -436,9 +434,7 @@ describe('lazy loading', () => {
           comboBox.open();
 
           expect(comboBox.filteredItems).to.eql(['baz']);
-          const visibleItems = Array.from(
-            comboBox.$.overlay._selector.querySelectorAll('vaadin-combo-box-item')
-          ).filter((item) => !item.hidden);
+          const visibleItems = getAllItems(comboBox).filter((item) => !item.hidden);
           expect(visibleItems.map((item) => item.$.content.innerText)).to.eql(['baz']);
         });
       });
@@ -662,7 +658,7 @@ describe('lazy loading', () => {
         comboBox.clearCache();
         comboBox.opened = true;
 
-        const selected = comboBox.$.overlay._selector.querySelectorAll('[selected]');
+        const selected = comboBox.$.overlay._scroller.querySelectorAll('[selected]');
         expect(selected).to.be.empty;
       });
 
@@ -690,9 +686,7 @@ describe('lazy loading', () => {
         comboBox.selectedItem = 'item 0';
         comboBox.opened = true;
         expect(comboBox.value).to.equal('item 0');
-        const selectedRenderedItemElements = Array.from(
-          comboBox.$.overlay._selector.querySelectorAll('vaadin-combo-box-item')
-        ).filter((itemEl) => itemEl.selected);
+        const selectedRenderedItemElements = getAllItems(comboBox).filter((itemEl) => itemEl.selected);
         expect(selectedRenderedItemElements).to.have.lengthOf(1);
         expect(selectedRenderedItemElements[0].item).to.equal('item 0');
       });
@@ -703,9 +697,7 @@ describe('lazy loading', () => {
         expect(comboBox.value).to.equal('item 0');
         await nextFrame();
         flush();
-        const selectedRenderedItemElements = Array.from(
-          comboBox.$.overlay._selector.querySelectorAll('vaadin-combo-box-item')
-        ).filter((itemEl) => itemEl.selected);
+        const selectedRenderedItemElements = getAllItems(comboBox).filter((itemEl) => itemEl.selected);
         // doesn't work when run on SauceLabs, work locally
         // expect(selectedRenderedItemElements).to.have.lengthOf(1);
         expect(selectedRenderedItemElements[0].item).to.equal('item 0');
@@ -732,9 +724,7 @@ describe('lazy loading', () => {
         comboBox.selectedItem = { id: 0, value: 'value 0', label: 'label 0' };
         comboBox.opened = true;
         expect(comboBox.value).to.equal('value 0');
-        const selectedRenderedItemElements = Array.from(
-          comboBox.$.overlay._selector.querySelectorAll('vaadin-combo-box-item')
-        ).filter((itemEl) => itemEl.selected);
+        const selectedRenderedItemElements = getAllItems(comboBox).filter((itemEl) => itemEl.selected);
         expect(selectedRenderedItemElements).to.have.lengthOf(1);
         expect(selectedRenderedItemElements[0].item).to.eql({ id: 0, value: 'value 0', label: 'label 0' });
       });
@@ -745,9 +735,7 @@ describe('lazy loading', () => {
         expect(comboBox.value).to.equal('value 0');
         await nextFrame();
         flush();
-        const selectedRenderedItemElements = Array.from(
-          comboBox.$.overlay._selector.querySelectorAll('vaadin-combo-box-item')
-        ).filter((itemEl) => itemEl.selected);
+        const selectedRenderedItemElements = getAllItems(comboBox).filter((itemEl) => itemEl.selected);
         // doesn't work when run on SauceLabs, work locally
         // expect(selectedRenderedItemElements).to.have.lengthOf(1);
         expect(selectedRenderedItemElements[0].item).to.eql({ id: 0, value: 'value 0', label: 'label 0' });
@@ -766,9 +754,7 @@ describe('lazy loading', () => {
         comboBox.opened = true;
         await nextFrame();
         flush();
-        const selectedRenderedItemElements = Array.from(
-          comboBox.$.overlay._selector.querySelectorAll('vaadin-combo-box-item')
-        ).filter((itemEl) => itemEl.selected);
+        const selectedRenderedItemElements = getAllItems(comboBox).filter((itemEl) => itemEl.selected);
         // doesn't work when run on SauceLabs, work locally
         // expect(selectedRenderedItemElements).to.have.lengthOf(1);
         expect(selectedRenderedItemElements[0].item).to.eql({ id: 0, value: 'value 0', label: 'label 0' });
@@ -791,9 +777,7 @@ describe('lazy loading', () => {
         comboBox.opened = true;
         await nextFrame();
         flush();
-        const selectedRenderedItemElements = Array.from(
-          comboBox.$.overlay._selector.querySelectorAll('vaadin-combo-box-item')
-        ).filter((itemEl) => itemEl.selected);
+        const selectedRenderedItemElements = getAllItems(comboBox).filter((itemEl) => itemEl.selected);
         // doesn't work when run on SauceLabs, work locally
         // expect(selectedRenderedItemElements).to.have.lengthOf(1);
         expect(selectedRenderedItemElements[0].item).to.eql({
@@ -1053,7 +1037,7 @@ describe('lazy loading', () => {
         // and sometimes the 'ironList.scrollToIndex' does not point
         // precisely to the given index, so use some margin
         const scrollMargin = 5;
-        const expectedFirstVisibleIndex = targetItemIndex - comboBox.$.overlay._visibleItemsCount() - scrollMargin;
+        const expectedFirstVisibleIndex = targetItemIndex - getVisibleItemsCount(comboBox) - scrollMargin;
         expect(getViewportItems(comboBox)[0].index).to.be.greaterThan(expectedFirstVisibleIndex);
         expect(getViewportItems(comboBox).pop().index).to.be.lessThan(targetItemIndex + 1);
       });
@@ -1096,7 +1080,7 @@ describe('lazy loading', () => {
 
         // Scroll to the end, as though if we drag the scrollbar and move it
         // to the bottom
-        const scrollHeight = comboBox.$.overlay._selector._scrollHeight;
+        const scrollHeight = comboBox.$.overlay._scroller._scrollHeight;
         comboBox.$.overlay._scroller.scrollTop += scrollHeight;
 
         // Flush the pending changes after the scrolling

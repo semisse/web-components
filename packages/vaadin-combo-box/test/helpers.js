@@ -47,7 +47,8 @@ export const onceOpened = (element) => {
   });
 };
 
-export const onceScrolled = (scroller) => {
+export const onceScrolled = (comboBox) => {
+  const scroller = comboBox.$.overlay._scroller;
   return new Promise((resolve) => {
     const listener = () => {
       scroller.removeEventListener('scroll', listener);
@@ -64,12 +65,26 @@ export const makeItems = (length) => {
 };
 
 /**
+ * Returns first item of the combo box dropdown.
+ */
+export const getFirstItem = (comboBox) => {
+  return comboBox.$.overlay._scroller.querySelector('vaadin-combo-box-item');
+};
+
+/**
+ * Returns all the items of the combo box dropdown.
+ */
+export const getAllItems = (comboBox) => {
+  return Array.from(comboBox.$.overlay._scroller.querySelectorAll('vaadin-combo-box-item'));
+};
+
+/**
  * Returns the items that are inside the bounds of the given combo box's dropdown viewport.
  */
 export const getViewportItems = (comboBox) => {
   const overlayRect = comboBox.$.overlay.$.dropdown.$.overlay.$.content.getBoundingClientRect();
 
-  return Array.from(comboBox.$.overlay._selector.querySelectorAll('vaadin-combo-box-item'))
+  return getAllItems(comboBox)
     .sort((a, b) => a.index - b.index)
     .filter((item) => !item.hidden)
     .filter((item) => {
@@ -78,9 +93,13 @@ export const getViewportItems = (comboBox) => {
     });
 };
 
+export const getVisibleItemsCount = (comboBox) => {
+  return comboBox.$.overlay._scroller._visibleItemsCount();
+};
+
 /**
  * Scrolls the combo box dropdown to the given index.
  */
 export const scrollToIndex = (comboBox, index) => {
-  comboBox.$.overlay.__virtualizer.scrollToIndex(index);
+  comboBox.$.overlay._scroller.scrollToIndex(index);
 };

@@ -1,5 +1,6 @@
 import { expect } from '@esm-bundle/chai';
 import { fixtureSync, arrowDownKeyDown, escKeyDown } from '@vaadin/testing-helpers';
+import { getAllItems } from './helpers.js';
 import './not-animated-styles.js';
 import '../vaadin-combo-box.js';
 
@@ -7,7 +8,7 @@ describe('ARIA', () => {
   let comboBox, input, toggle;
 
   function getItemElement(i) {
-    return comboBox.$.overlay._selector.querySelectorAll('vaadin-combo-box-item')[i];
+    return getAllItems(comboBox)[i];
   }
 
   beforeEach(() => {
@@ -36,8 +37,9 @@ describe('ARIA', () => {
       arrowDownKeyDown(comboBox.inputElement);
     });
 
-    it('should set role listbox on the iron-list', () => {
-      expect(comboBox.$.overlay._selector.getAttribute('role')).to.equal('listbox');
+    it('should set role listbox on the scroller', () => {
+      const scroller = comboBox.$.overlay._scroller;
+      expect(scroller.getAttribute('role')).to.equal('listbox');
     });
 
     it('should set aria-expanded attribute when opened', () => {

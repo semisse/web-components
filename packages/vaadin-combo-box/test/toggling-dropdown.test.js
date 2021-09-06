@@ -278,25 +278,6 @@ describe('toggling dropdown', () => {
     });
   });
 
-  describe('lazy upgrade dropdown', () => {
-    const getDropdown = () => {
-      return comboBox.$.overlay.shadowRoot.querySelector('vaadin-combo-box-dropdown');
-    };
-
-    it('should have disable-upgrade attribute initially', () => {
-      const dropdown = getDropdown();
-      expect(dropdown.hasAttribute('disable-upgrade')).to.be.true;
-      expect(dropdown.$).to.be.not.ok;
-    });
-
-    it('should remove disable-upgrade attribute on open', () => {
-      comboBox.open();
-      const dropdown = getDropdown();
-      expect(dropdown.hasAttribute('disable-upgrade')).to.be.false;
-      expect(dropdown.$).to.be.ok;
-    });
-  });
-
   (TOUCH_DEVICE ? describe : describe.skip)('external focus (initially)', () => {
     let input, blurSpy;
 

@@ -272,7 +272,6 @@ export const ComboBoxMixin = (subclass) =>
       this._lastCommittedValue = this.value;
       IronA11yAnnouncer.requestAvailability();
 
-      // 2.0 does not support 'overlay.selection-changed' syntax in listeners
       this.$.overlay.addEventListener('selection-changed', this._boundOverlaySelectedItemChanged);
 
       this.addEventListener('vaadin-combo-box-dropdown-closed', this._boundClose);

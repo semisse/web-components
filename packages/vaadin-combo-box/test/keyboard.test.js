@@ -13,7 +13,7 @@ import {
   isDesktopSafari,
   nextFrame
 } from '@vaadin/testing-helpers';
-import { getViewportItems, onceScrolled, scrollToIndex } from './helpers.js';
+import { getViewportItems, getVisibleItemsCount, onceScrolled, scrollToIndex } from './helpers.js';
 import './not-animated-styles.js';
 import '../src/vaadin-combo-box.js';
 
@@ -356,7 +356,7 @@ describe('keyboard', () => {
 
     it('should scroll down after reaching the last visible item', () => {
       scrollToIndex(comboBox, 0);
-      comboBox._focusedIndex = comboBox.$.overlay._visibleItemsCount() - 1;
+      comboBox._focusedIndex = getVisibleItemsCount(comboBox) - 1;
       expect(getViewportItems(comboBox)[0].index).to.eql(0);
 
       arrowDownKeyDown(comboBox.inputElement);
@@ -401,7 +401,7 @@ describe('keyboard', () => {
 
       arrowUpKeyDown(comboBox.inputElement);
 
-      expect(getViewportItems(comboBox)[0].index).to.eql(49 - comboBox.$.overlay._visibleItemsCount() + 1);
+      expect(getViewportItems(comboBox)[0].index).to.eql(49 - getVisibleItemsCount(comboBox) + 1);
     });
 
     it('should scroll to last visible when navigating down below viewport', () => {
@@ -411,7 +411,7 @@ describe('keyboard', () => {
 
       arrowDownKeyDown(comboBox.inputElement);
 
-      expect(getViewportItems(comboBox)[0].index).to.eql(51 - comboBox.$.overlay._visibleItemsCount() + 1);
+      expect(getViewportItems(comboBox)[0].index).to.eql(51 - getVisibleItemsCount(comboBox) + 1);
     });
 
     it('should scroll to start if no items focused when opening overlay', async () => {
@@ -431,8 +431,8 @@ describe('keyboard', () => {
 
       comboBox.open();
 
-      await onceScrolled(comboBox.$.overlay._scroller);
-      expect(getViewportItems(comboBox)[0].index).to.be.within(50 - comboBox.$.overlay._visibleItemsCount(), 50);
+      await onceScrolled(comboBox);
+      expect(getViewportItems(comboBox)[0].index).to.be.within(50 - getVisibleItemsCount(comboBox), 50);
     });
   });
 

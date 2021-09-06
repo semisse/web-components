@@ -5,7 +5,6 @@
  */
 import { PolymerElement, html } from '@polymer/polymer/polymer-element.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
-import { DisableUpgradeMixin } from '@polymer/polymer/lib/mixins/disable-upgrade-mixin.js';
 import { OverlayElement } from '@vaadin/vaadin-overlay/src/vaadin-overlay.js';
 import { IronResizableBehavior } from '@polymer/iron-resizable-behavior/iron-resizable-behavior.js';
 import { registerStyles, css } from '@vaadin/vaadin-themable-mixin/register-styles.js';
@@ -62,7 +61,7 @@ customElements.define(ComboBoxOverlayElement.is, ComboBoxOverlayElement);
  * @extends HTMLElement
  * @private
  */
-class ComboBoxDropdownElement extends DisableUpgradeMixin(mixinBehaviors(IronResizableBehavior, PolymerElement)) {
+class ComboBoxDropdownElement extends mixinBehaviors(IronResizableBehavior, PolymerElement) {
   static get template() {
     return html`
       <style>
@@ -80,9 +79,7 @@ class ComboBoxDropdownElement extends DisableUpgradeMixin(mixinBehaviors(IronRes
         opened="[[opened]]"
         style="align-items: stretch; margin: 0;"
         theme$="[[theme]]"
-      >
-        <slot></slot>
-      </vaadin-combo-box-overlay>
+      ></vaadin-combo-box-overlay>
     `;
   }
 
